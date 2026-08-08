@@ -18,6 +18,47 @@ devolución es peor que no tener asistente. omni-rag responde **anclado** a los
 documentos oficiales que le cargues y **cita la fuente** de cada afirmación; si la
 respuesta no está en los documentos, lo dice — no la inventa.
 
+## ¿Para qué sirve?
+
+Imaginá el mostrador de una tienda o un call center. Un cliente pregunta:
+
+> *"¿Este aire acondicionado tiene garantía y cuántos días tengo para devolverlo
+> si no me convence?"*
+
+En vez de buscar en una carpeta o dejar al cliente esperando, alguien —un
+empleado, o directamente un chatbot— le pregunta a omni-rag y obtiene:
+
+> *"Los productos electrónicos tienen 6 meses de garantía contra fallas. Tenés
+> 30 días corridos para devolverlo sin uso, con el ticket [1]."*
+
+…y con ese **[1]** puede ver de qué documento oficial salió la respuesta. Si la
+pregunta no está en los documentos, responde **"La información disponible no
+cubre ese punto"** en lugar de inventar.
+
+**Casos de uso típicos:**
+
+- **Soporte y postventa** — garantías, devoluciones, envíos, financiación.
+- **Chatbot de atención al cliente** que solo contesta con información oficial.
+- **Capacitación / onboarding** — el personal consulta procedimientos al instante.
+- **Manuales técnicos** — *"¿cómo reseteo el modelo X?"*.
+- Fuera del retail: estudios jurídicos, clínicas, bancos, seguros, RR. HH.
+
+### ¿Cómo funciona? (en simple)
+
+```mermaid
+flowchart LR
+    U["Empleado o cliente<br/>hace una pregunta"] --> API["omni-rag<br/>(API)"]
+    D[("Documentos oficiales<br/>manuales · políticas · FAQs")] --> R
+    API --> R["1 · Busca los fragmentos<br/>más relevantes"]
+    R --> G["2 · El LLM local redacta<br/>la respuesta SOLO con eso"]
+    G --> A["3 · Respuesta + cita [n]<br/>o 'no lo cubre'"]
+```
+
+El valor no es solo *responder*: es **no mentir**. Un asistente que se inventa un
+plazo de garantía es peor que no tener nada. omni-rag responde **anclado a los
+documentos y citando la fuente**, y es **100% local** (los datos no salen de tu
+infraestructura).
+
 ## Arquitectura (resumen)
 
 ```
