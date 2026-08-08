@@ -1,0 +1,43 @@
+"""Configuración de la aplicación, cargada desde variables de entorno.
+
+Usa pydantic-settings: cada campo puede sobrescribirse con una variable de
+entorno con prefijo ``OMNIRAG_`` (o desde un archivo ``.env``).
+"""
+from functools import lru_cache
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from app import __version__
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_prefix="OMNIRAG_", extra="ignore"
+    )
+
+    # --- Ollama ---
+    ollama_url: str = "http://localhost:11434"
+    embed_model: str = "nomic-embed-text"
+    gen_model: str = "qwen2.5:7b"
+
+    # --- Parámetros de RAG ---
+    chunk_chars: int = 1000
+    chunk_overlap: int = 150
+    top_k: int = 8
+    gen_temperature: float = 0.1
+    gen_num_predict: int = 500
+
+    # --- Almacenamiento ---
+    index_path: str = "data/index.json"
+
+    # --- API ---
+    app_name: str = "omni-rag"
+    version: str = __version__
+    api_key: str | None = None
+    log_level: str = "INFO"
+
+
+@lru_cache
+def get_settings() -> Settings:
+    """Devuelve la configuración (cacheada: se lee una sola vez)."""
+    return Settings()
