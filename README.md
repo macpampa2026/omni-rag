@@ -192,7 +192,7 @@ pytest
 - [x] **M1** — API core RAG (FastAPI, capas, health/documents/ask, tests base)
 - [x] **M2** — PostgreSQL + pgvector (almacén relacional + vectorial, migraciones Alembic)
 - [x] **M3** — Tests + CI (ruff + pytest en GitHub Actions)
-- [ ] **M4** — Docker + docker-compose (API + Postgres/pgvector + Redis) — *escrito; falta correr*
+- [x] **M4** — Docker + docker-compose (API + Postgres/pgvector + Redis)
 - [ ] **M5** — Microservicio en Go
 - [ ] **M6** — Observabilidad (Prometheus + Grafana)
 - [ ] **M7** — Despliegue en Render + manifiestos Kubernetes
