@@ -15,6 +15,7 @@ from app import __version__
 from app.api import ask, documents, health
 from app.config import get_settings
 from app.logging_conf import configure_logging
+from app.services.cache import Cache
 from app.services.ollama_client import OllamaClient, OllamaError
 from app.services.vector_store import InMemoryVectorStore
 
@@ -28,10 +29,12 @@ async def lifespan(app: FastAPI):
     logger = logging.getLogger("app.startup")
 
     if not getattr(app.state, "ollama", None):
+        app.state.cache = Cache(settings.redis_url)
         app.state.ollama = OllamaClient(
             base_url=settings.ollama_url,
             embed_model=settings.embed_model,
             gen_model=settings.gen_model,
+            cache=app.state.cache,
         )
     if not getattr(app.state, "store", None):
         if settings.database_url:

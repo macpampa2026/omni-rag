@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     database_url: str | None = None
     embed_dim: int = 768  # dimensión de los embeddings (nomic-embed-text = 768)
 
+    # --- Cache (M4) ---
+    # Opcional: si se define, cachea los embeddings de las consultas en Redis.
+    # Ej: redis://localhost:6379/0
+    redis_url: str | None = None
+
     # --- API ---
     app_name: str = "omni-rag"
     version: str = __version__

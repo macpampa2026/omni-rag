@@ -162,6 +162,24 @@ uvicorn app.main:app --reload
 Si `OMNIRAG_DATABASE_URL` no está definida, se usa el índice en memoria (M1). El
 mismo `VectorStore` (interfaz) permite intercambiar backends sin tocar la lógica.
 
+## Docker (stack completo)
+
+Para levantar **todo el stack** (API + PostgreSQL con pgvector + Redis) con un
+solo comando, sin instalar nada más que Docker:
+
+```bash
+docker compose up --build
+```
+
+Arranca tres servicios:
+
+- **db** — PostgreSQL con la extensión `pgvector` (imagen `pgvector/pgvector`).
+- **redis** — cache de embeddings de consultas.
+- **api** — el servicio FastAPI: corre las migraciones de Alembic y levanta en el puerto 8000.
+
+El motor de IA (Ollama) corre en tu máquina (host); el contenedor `api` lo alcanza
+vía `host.docker.internal`. Abrí **http://localhost:8000/docs**.
+
 ## Tests
 
 ```bash
@@ -174,7 +192,7 @@ pytest
 - [x] **M1** — API core RAG (FastAPI, capas, health/documents/ask, tests base)
 - [x] **M2** — PostgreSQL + pgvector (almacén relacional + vectorial, migraciones Alembic)
 - [x] **M3** — Tests + CI (ruff + pytest en GitHub Actions)
-- [ ] **M4** — Docker + docker-compose
+- [ ] **M4** — Docker + docker-compose (API + Postgres/pgvector + Redis) — *escrito; falta correr*
 - [ ] **M5** — Microservicio en Go
 - [ ] **M6** — Observabilidad (Prometheus + Grafana)
 - [ ] **M7** — Despliegue en Render + manifiestos Kubernetes

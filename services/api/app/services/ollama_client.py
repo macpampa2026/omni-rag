@@ -6,6 +6,8 @@ FastAPI ejecuta los handlers `def` en un threadpool, así no bloqueamos el loop.
 """
 from __future__ import annotations
 
+import hashlib
+
 import httpx
 
 
@@ -20,10 +22,12 @@ class OllamaClient:
         embed_model: str,
         gen_model: str,
         timeout: float = 300.0,
+        cache=None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.embed_model = embed_model
         self.gen_model = gen_model
+        self._cache = cache
         self._client = httpx.Client(base_url=self.base_url, timeout=timeout)
 
     # --- Embeddings ---
@@ -57,7 +61,19 @@ class OllamaClient:
         return out
 
     def embed_one(self, text: str) -> list[float]:
-        return self.embed([text])[0]
+        # Cache opcional: el embedding de un texto es determinístico, así que
+        # cachearlo es seguro (nunca queda obsoleto).
+        key = None
+        if self._cache is not None and self._cache.enabled:
+            digest = hashlib.sha1(text.encode("utf-8")).hexdigest()
+            key = f"emb:{self.embed_model}:{digest}"
+            cached = self._cache.get_json(key)
+            if cached is not None:
+                return cached
+        vec = self.embed([text])[0]
+        if key is not None:
+            self._cache.set_json(key, vec)
+        return vec
 
     # --- Generación ---
     def chat(
