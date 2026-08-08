@@ -9,6 +9,12 @@ infraestructura.
 > (API, bases de datos, tests, contenedores, observabilidad, CI/CD y despliegue en
 > la nube). Pensado para el dominio de **soporte / postventa omnicanal**.
 
+![CI](https://github.com/macpampa2026/omni-rag/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-pgvector-4169E1?logo=postgresql&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 ---
 
 ## ¿Por qué existe?
@@ -167,7 +173,7 @@ pytest
 
 - [x] **M1** — API core RAG (FastAPI, capas, health/documents/ask, tests base)
 - [x] **M2** — PostgreSQL + pgvector (almacén relacional + vectorial, migraciones Alembic)
-- [ ] **M3** — Tests + CI (GitHub Actions)
+- [x] **M3** — Tests + CI (ruff + pytest en GitHub Actions)
 - [ ] **M4** — Docker + docker-compose
 - [ ] **M5** — Microservicio en Go
 - [ ] **M6** — Observabilidad (Prometheus + Grafana)
