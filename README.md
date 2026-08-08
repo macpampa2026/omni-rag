@@ -180,6 +180,29 @@ Arranca tres servicios:
 El motor de IA (Ollama) corre en tu máquina (host); el contenedor `api` lo alcanza
 vía `host.docker.internal`. Abrí **http://localhost:8000/docs**.
 
+## Gateway (microservicio en Go)
+
+Además del servicio principal en Python, hay un pequeño **microservicio en Go**
+(`services/gateway/`) que **agrega la salud del sistema**: expone su propia
+liveness y consulta la API de Python para reportar un estado combinado. Demuestra
+comunicación entre servicios en distintos lenguajes (**Go ↔ Python**).
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `GET` | `/healthz` | Liveness del gateway |
+| `GET` | `/status` | Estado combinado: gateway + API (consulta `/health/ready`) |
+
+Corre solo (con la API de Python en el puerto 8000):
+
+```bash
+cd services/gateway
+go run .            # escucha en :9000
+curl localhost:9000/status
+```
+
+También forma parte del stack de `docker compose` (puerto 9000), alcanzando a la
+API por su nombre de servicio (`http://api:8000`).
+
 ## Tests
 
 ```bash
@@ -193,7 +216,7 @@ pytest
 - [x] **M2** — PostgreSQL + pgvector (almacén relacional + vectorial, migraciones Alembic)
 - [x] **M3** — Tests + CI (ruff + pytest en GitHub Actions)
 - [x] **M4** — Docker + docker-compose (API + Postgres/pgvector + Redis)
-- [ ] **M5** — Microservicio en Go
+- [x] **M5** — Microservicio en Go (gateway de estado; comunicación Go ↔ Python)
 - [ ] **M6** — Observabilidad (Prometheus + Grafana)
 - [ ] **M7** — Despliegue en Render + manifiestos Kubernetes
 - [ ] **M8** — Vitrina y pitch

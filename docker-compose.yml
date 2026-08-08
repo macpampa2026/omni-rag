@@ -53,5 +53,16 @@ services:
       sh -c "alembic upgrade head &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
+  # Microservicio en Go: agrega la salud del sistema (Go <-> Python).
+  gateway:
+    build: ./services/gateway
+    environment:
+      GATEWAY_API_URL: http://api:8000
+      GATEWAY_PORT: "9000"
+    ports:
+      - "9000:9000"
+    depends_on:
+      - api
+
 volumes:
   pgdata:
