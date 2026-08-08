@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: omni-rag
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      # Corre las migraciones ANTES de arrancar la API (initContainer).
+      initContainers:
+        - name: migrate
+          image: omni-rag-api:local
+          imagePullPolicy: IfNotPresent
+          command: ["alembic", "upgrade", "head"]
+          envFrom:
+            - configMapRef:
+                name: omni-rag-config
+            - secretRef:
+                name: omni-rag-secrets
+      containers:
+        - name: api
+          image: omni-rag-api:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: omni-rag-config
+            - secretRef:
+                name: omni-rag-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: omni-rag
+spec:
+  type: NodePort
+  selector:
+    app: api
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30800
+---
+# Autoescalado por CPU (requiere metrics-server para escalar de verdad;
+# el manifiesto demuestra la configuración de HPA).
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api
+  namespace: omni-rag
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 1
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70

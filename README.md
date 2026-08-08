@@ -215,6 +215,25 @@ curl localhost:9000/status
 También forma parte del stack de `docker compose` (puerto 9000), alcanzando a la
 API por su nombre de servicio (`http://api:8000`).
 
+## Kubernetes (despliegue local)
+
+Los manifiestos en [`deploy/k8s/`](deploy/k8s/) despliegan **todo el stack** en un
+cluster de Kubernetes (probado en el que trae Docker Desktop): **postgres** (pgvector)
+con PVC, **redis**, **api** (con las migraciones en un *initContainer*, probes de
+liveness/readiness, límites de recursos y un **HorizontalPodAutoscaler**) y **gateway**,
+cada uno con su Service.
+
+```bash
+# 1) Construir las imágenes locales que usa el cluster:
+docker build -t omni-rag-api:local services/api
+docker build -t omni-rag-gateway:local services/gateway
+# 2) Desplegar:
+kubectl apply -f deploy/k8s/
+kubectl get pods -n omni-rag
+# 3) Acceder al API:
+kubectl port-forward -n omni-rag svc/api 8000:8000   # -> http://localhost:8000/docs
+```
+
 ## Tests
 
 ```bash
@@ -230,7 +249,7 @@ pytest
 - [x] **M4** — Docker + docker-compose (API + Postgres/pgvector + Redis)
 - [x] **M5** — Microservicio en Go (gateway de estado; comunicación Go ↔ Python)
 - [x] **M6** — Observabilidad (métricas Prometheus + dashboard Grafana provisionado)
-- [ ] **M7** — Despliegue en Render + manifiestos Kubernetes
+- [x] **M7** — Manifiestos de Kubernetes (stack completo, verificado en cluster local) · *deploy en Render: opcional*
 - [ ] **M8** — Vitrina y pitch
 
 ## Licencia
