@@ -67,18 +67,28 @@ infraestructura).
 
 ## Arquitectura (resumen)
 
-```
-                +-------------------+
-   HTTP  --->   |   API (FastAPI)   |
-                |  api / services   |
-                +----+---------+----+
-                     |         |
-             embeddings/gen   vector store
-                     |         |
-                +----v----+  +-v------------------+
-                | Ollama  |  | InMemory (M1)      |
-                | local   |  | -> pgvector (M2)   |
-                +---------+  +--------------------+
+```mermaid
+flowchart TB
+    U["Usuario / cliente"]
+    OLL["Ollama en el host - LLM + embeddings"]
+
+    subgraph stack["Stack desplegable (docker compose / Kubernetes)"]
+        GW["gateway - Go - salud del sistema"]
+        API["api - FastAPI - RAG por capas"]
+        PG[("PostgreSQL + pgvector")]
+        RD[("Redis - cache de embeddings")]
+        PR["Prometheus"]
+        GF["Grafana - dashboard"]
+    end
+
+    U --> GW
+    U --> API
+    GW -->|consulta /health/ready| API
+    API -->|SQL + busqueda vectorial| PG
+    API -->|cache| RD
+    API -->|embeddings + generacion| OLL
+    PR -->|scrapea /metrics| API
+    GF --> PR
 ```
 
 Capas del servicio API (`services/api/app/`):
