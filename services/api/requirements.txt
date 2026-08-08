@@ -6,3 +6,8 @@ httpx>=0.27
 pypdf>=5.1
 python-multipart>=0.0.12
 prometheus-client>=0.21
+# --- M2: base de datos (PostgreSQL + pgvector) ---
+sqlalchemy>=2.0
+psycopg[binary]>=3.2
+pgvector>=0.3.6
+alembic>=1.13

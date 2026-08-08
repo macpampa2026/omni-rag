@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     # --- Almacenamiento ---
     index_path: str = "data/index.json"
 
+    # --- Base de datos (M2) ---
+    # Si se define, se usa PostgreSQL + pgvector en lugar del índice en memoria.
+    # Ej: postgresql+psycopg://user:pass@host/db?sslmode=require
+    database_url: str | None = None
+    embed_dim: int = 768  # dimensión de los embeddings (nomic-embed-text = 768)
+
     # --- API ---
     app_name: str = "omni-rag"
     version: str = __version__

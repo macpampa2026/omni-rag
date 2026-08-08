@@ -130,6 +130,32 @@ curl -X POST http://localhost:8000/documents -H "Content-Type: application/json"
 curl -X POST http://localhost:8000/ask -H "Content-Type: application/json" -d "{\"question\":\"Cuantos dias tengo para devolver?\"}"
 ```
 
+## Base de datos (PostgreSQL + pgvector)
+
+Por defecto omni-rag usa un índice en memoria (ideal para probar). Para uso real,
+puede usar **PostgreSQL con la extensión [pgvector](https://github.com/pgvector/pgvector)**
+como almacén **relacional + vectorial**. Solo hay que definir `OMNIRAG_DATABASE_URL`
+(por ejemplo, una base gratis de [Neon](https://neon.tech)):
+
+```bash
+cd services/api
+# 1) Poné tu cadena de conexión en services/api/.env (driver +psycopg):
+#    OMNIRAG_DATABASE_URL=postgresql+psycopg://USER:PASS@HOST/DB?sslmode=require
+# 2) Creá el esquema (extensión vector + tablas) con Alembic:
+alembic upgrade head
+# 3) Arrancá la API: /health/ready ahora reporta "store": "postgres:up"
+uvicorn app.main:app --reload
+```
+
+**Esquema** (migración `alembic/versions/0001_initial.py`):
+
+- `documents(doc_id, title)` — un registro por documento.
+- `chunks(id, doc_id → documents, page, text, embedding vector(768))` — fragmentos,
+  con índice **HNSW** para búsqueda por distancia coseno.
+
+Si `OMNIRAG_DATABASE_URL` no está definida, se usa el índice en memoria (M1). El
+mismo `VectorStore` (interfaz) permite intercambiar backends sin tocar la lógica.
+
 ## Tests
 
 ```bash
@@ -140,7 +166,7 @@ pytest
 ## Hoja de ruta
 
 - [x] **M1** — API core RAG (FastAPI, capas, health/documents/ask, tests base)
-- [ ] **M2** — PostgreSQL + pgvector + Redis
+- [x] **M2** — PostgreSQL + pgvector (almacén relacional + vectorial, migraciones Alembic)
 - [ ] **M3** — Tests + CI (GitHub Actions)
 - [ ] **M4** — Docker + docker-compose
 - [ ] **M5** — Microservicio en Go

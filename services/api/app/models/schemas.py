@@ -59,5 +59,6 @@ class HealthResponse(BaseModel):
 class ReadyResponse(BaseModel):
     status: str
     ollama: str
+    store: str = Field(..., description="Backend de almacenamiento y su estado, ej: 'postgres:up'")
     indexed_documents: int
     indexed_chunks: int

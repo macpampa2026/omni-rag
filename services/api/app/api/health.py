@@ -24,11 +24,20 @@ def ready(
     ollama: OllamaClient = Depends(get_ollama),
     store: VectorStore = Depends(get_store),
 ) -> ReadyResponse:
-    """Listo para servir: comprueba que Ollama responde y reporta el índice."""
+    """Listo para servir: comprueba Ollama y el almacén, y reporta el índice."""
     ollama_ok = ollama.ping()
+    backend = "postgres" if store.__class__.__name__ == "PgVectorStore" else "memory"
+    try:
+        docs = len(store.list_documents())
+        chunks = store.count_chunks()
+        store_ok = True
+    except Exception:  # noqa: BLE001
+        docs, chunks, store_ok = 0, 0, False
+    healthy = ollama_ok and store_ok
     return ReadyResponse(
-        status="ready" if ollama_ok else "degraded",
+        status="ready" if healthy else "degraded",
         ollama="up" if ollama_ok else "down",
-        indexed_documents=len(store.list_documents()),
-        indexed_chunks=store.count_chunks(),
+        store=f"{backend}:{'up' if store_ok else 'down'}",
+        indexed_documents=docs,
+        indexed_chunks=chunks,
     )

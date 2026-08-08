@@ -34,14 +34,21 @@ async def lifespan(app: FastAPI):
             gen_model=settings.gen_model,
         )
     if not getattr(app.state, "store", None):
-        app.state.store = InMemoryVectorStore(settings.index_path)
+        if settings.database_url:
+            from app.services.pgvector_store import PgVectorStore
+
+            app.state.store = PgVectorStore(settings.database_url)
+            app.state.store_backend = "postgres"
+        else:
+            app.state.store = InMemoryVectorStore(settings.index_path)
+            app.state.store_backend = "memory"
     logger.info(
         "omni-rag iniciado",
         extra={
             "version": settings.version,
             "gen_model": settings.gen_model,
             "embed_model": settings.embed_model,
-            "indexed_chunks": app.state.store.count_chunks(),
+            "store_backend": getattr(app.state, "store_backend", "memory"),
         },
     )
     try:
