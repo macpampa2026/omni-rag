@@ -47,11 +47,11 @@ cubre ese punto"** en lugar de inventar.
 
 ```mermaid
 flowchart LR
-    U["Empleado o cliente<br/>hace una pregunta"] --> API["omni-rag<br/>(API)"]
-    D[("Documentos oficiales<br/>manuales · políticas · FAQs")] --> R
-    API --> R["1 · Busca los fragmentos<br/>más relevantes"]
-    R --> G["2 · El LLM local redacta<br/>la respuesta SOLO con eso"]
-    G --> A["3 · Respuesta + cita [n]<br/>o 'no lo cubre'"]
+    U["Empleado o cliente hace una pregunta"] --> API["omni-rag (API)"]
+    D[("Documentos oficiales: manuales, politicas, FAQs")] --> R
+    API --> R["1 - Busca los fragmentos relevantes"]
+    R --> G["2 - El LLM local redacta SOLO con eso"]
+    G --> A["3 - Respuesta + cita, o 'no lo cubre'"]
 ```
 
 El valor no es solo *responder*: es **no mentir**. Un asistente que se inventa un
