@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, s
 from app.api.deps import get_ollama, get_settings, get_store, require_api_key
 from app.config import Settings
 from app.models.schemas import DocumentInfo, IngestResponse, IngestTextRequest
+from app.observability import metrics as obs
 from app.services import ingest
 from app.services.ollama_client import OllamaClient
 from app.services.vector_store import VectorStore
@@ -48,6 +49,7 @@ def ingest_text_endpoint(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="El texto es demasiado corto para indexar.",
         )
+    obs.DOCS_INGESTED.inc()
     return IngestResponse(doc_id=body.doc_id, title=body.title or body.doc_id, chunks=n)
 
 
@@ -98,4 +100,5 @@ def ingest_pdf_endpoint(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="El PDF no tiene texto extraíble para indexar.",
         )
+    obs.DOCS_INGESTED.inc()
     return IngestResponse(doc_id=doc_id, title=title or doc_id, chunks=total)

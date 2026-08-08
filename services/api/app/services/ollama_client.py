@@ -63,13 +63,17 @@ class OllamaClient:
     def embed_one(self, text: str) -> list[float]:
         # Cache opcional: el embedding de un texto es determinístico, así que
         # cachearlo es seguro (nunca queda obsoleto).
+        from app.observability import metrics as obs
+
         key = None
         if self._cache is not None and self._cache.enabled:
             digest = hashlib.sha1(text.encode("utf-8")).hexdigest()
             key = f"emb:{self.embed_model}:{digest}"
             cached = self._cache.get_json(key)
             if cached is not None:
+                obs.EMBED_CACHE.labels("hit").inc()
                 return cached
+            obs.EMBED_CACHE.labels("miss").inc()
         vec = self.embed([text])[0]
         if key is not None:
             self._cache.set_json(key, vec)

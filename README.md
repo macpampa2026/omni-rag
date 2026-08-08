@@ -180,6 +180,18 @@ Arranca tres servicios:
 El motor de IA (Ollama) corre en tu máquina (host); el contenedor `api` lo alcanza
 vía `host.docker.internal`. Abrí **http://localhost:8000/docs**.
 
+## Observabilidad (Prometheus + Grafana)
+
+La API expone métricas en formato Prometheus en **`/metrics`**: conteo y latencia de
+requests HTTP, consultas RAG, documentos ingestados y aciertos/fallos del cache de
+embeddings. El stack de `docker compose` incluye **Prometheus** (que scrapea la API) y
+**Grafana** con un **dashboard provisionado**:
+
+- Prometheus → **http://localhost:9090**
+- Grafana (dashboard *"omni-rag — Observabilidad"*) → **http://localhost:3000** (login anónimo)
+
+Configuración en `deploy/prometheus/` y `deploy/grafana/provisioning/`.
+
 ## Gateway (microservicio en Go)
 
 Además del servicio principal en Python, hay un pequeño **microservicio en Go**
@@ -217,7 +229,7 @@ pytest
 - [x] **M3** — Tests + CI (ruff + pytest en GitHub Actions)
 - [x] **M4** — Docker + docker-compose (API + Postgres/pgvector + Redis)
 - [x] **M5** — Microservicio en Go (gateway de estado; comunicación Go ↔ Python)
-- [ ] **M6** — Observabilidad (Prometheus + Grafana)
+- [x] **M6** — Observabilidad (métricas Prometheus + dashboard Grafana provisionado)
 - [ ] **M7** — Despliegue en Render + manifiestos Kubernetes
 - [ ] **M8** — Vitrina y pitch
 

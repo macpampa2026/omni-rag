@@ -6,15 +6,17 @@ Arma la app, configura logging, crea los objetos de larga vida en el lifespan
 from __future__ import annotations
 
 import logging
+import time
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
 from app import __version__
 from app.api import ask, documents, health
 from app.config import get_settings
 from app.logging_conf import configure_logging
+from app.observability import metrics as obs
 from app.services.cache import Cache
 from app.services.ollama_client import OllamaClient, OllamaError
 from app.services.vector_store import InMemoryVectorStore
@@ -76,6 +78,20 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(documents.router)
     app.include_router(ask.router)
+
+    @app.middleware("http")
+    async def _metrics_middleware(request: Request, call_next):
+        start = time.perf_counter()
+        response = await call_next(request)
+        elapsed = time.perf_counter() - start
+        path = request.url.path
+        obs.REQUESTS.labels(request.method, path, str(response.status_code)).inc()
+        obs.LATENCY.labels(request.method, path).observe(elapsed)
+        return response
+
+    @app.get("/metrics", tags=["meta"], summary="Métricas Prometheus")
+    def metrics_endpoint() -> Response:
+        return Response(obs.generate_latest(), media_type=obs.CONTENT_TYPE_LATEST)
 
     @app.exception_handler(OllamaError)
     async def _ollama_error_handler(_request, exc: OllamaError):
