@@ -17,6 +17,31 @@ infraestructura.
 
 ---
 
+## Para quien evalúa este repositorio
+
+Este proyecto está pensado para **demostrar ingeniería de backend a estándar de
+producción** — no solo IA. Todo es **clonable y ejecutable**: `docker compose up` y
+está corriendo; `pytest` corre la suite **en verde** (ver el badge de CI arriba).
+
+| Capacidad | Dónde verla en el código |
+|---|---|
+| **APIs REST con FastAPI** | `services/api/app/api/` (routers) · documentación viva en `/docs` (OpenAPI) |
+| **Validación y contratos tipados** | Pydantic v2 en `services/api/app/models/` |
+| **Autenticación / seguridad** | API key por header `X-API-Key` en todos los endpoints (salvo health) |
+| **Base de datos relacional + migraciones** | PostgreSQL (`services/api/app/services/pgvector_store.py`) · migraciones Alembic en `alembic/versions/` |
+| **Arquitectura en capas + inversión de dependencias** | `services/` detrás de una interfaz `VectorStore` (Protocol): el backend se cambia sin tocar la lógica |
+| **Testing automatizado** | 23 tests con `pytest` en `services/api/tests/` |
+| **CI** | GitHub Actions (ruff + pytest) en cada push — badge arriba |
+| **Contenedores y orquestación** | `Dockerfile` · `docker-compose.yml` · Kubernetes en `deploy/k8s/` |
+| **Observabilidad** | métricas Prometheus en `/metrics` + dashboard Grafana provisionado |
+| **Segundo lenguaje** | microservicio en **Go** en `services/gateway/` (Go ↔ Python) |
+
+> Es un **proyecto propio** llevado a estándar de producción. Soy desarrollador
+> **autodidacta** y trabajo potenciado con **desarrollo asistido por IA**; lo que ofrezco
+> es **criterio y código que se ejecuta y se audita**.
+
+---
+
 ## ¿Por qué existe?
 
 Un asistente de soporte que **inventa** un plazo de garantía o una política de
