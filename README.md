@@ -42,6 +42,33 @@ está corriendo; `pytest` corre la suite **en verde** (ver el badge de CI arriba
 
 ---
 
+## Demo (corrida real)
+
+Salida **real** del sistema (instancia local, con reranking activado). Se cargan tres
+políticas y se hacen dos preguntas: una **cubierta** por los documentos y otra **fuera
+de alcance**.
+
+```text
+== Caso 1: pregunta CUBIERTA por los documentos ==
+PREGUNTA:  ¿Cuántos meses de garantía tienen los electrónicos y cuántos días tengo para devolver?
+RESPUESTA: - Los productos electrónicos tienen 12 meses de garantía oficial contra fallas
+             de fabricación [1].
+           - Tenés 30 días corridos desde la compra para devolver un producto sin uso y en
+             su empaque original [2].
+FUENTES:   [1] Política de garantía      (score 0.78)
+           [2] Política de devoluciones  (score 0.64)
+
+== Caso 2: pregunta FUERA DE ALCANCE (no está en los documentos) ==
+PREGUNTA:  ¿Hacen envíos internacionales a España y cuánto cuestan?
+RESPUESTA: La información disponible no cubre ese punto.
+```
+
+En el **Caso 1** responde con los datos correctos y **cita la fuente** de cada afirmación.
+En el **Caso 2**, como la respuesta no está en los documentos, **lo dice en vez de
+inventar**. Ese es el corazón de omni-rag: **no mentir**.
+
+---
+
 ## ¿Por qué existe?
 
 Un asistente de soporte que **inventa** un plazo de garantía o una política de
