@@ -35,6 +35,7 @@ está corriendo; `pytest` corre la suite **en verde** (ver el badge de CI arriba
 | **Contenedores y orquestación** | `Dockerfile` · `docker-compose.yml` · Kubernetes en `deploy/k8s/` |
 | **Observabilidad** | métricas Prometheus en `/metrics` + dashboard Grafana provisionado |
 | **Segundo lenguaje** | microservicio en **Go** en `services/gateway/` (Go ↔ Python) |
+| **Frontend** | interfaz en **React + TypeScript (Vite)** en `services/web/` que consume la API |
 
 > Es un **proyecto propio** llevado a estándar de producción. Soy desarrollador
 > **autodidacta** y trabajo potenciado con **desarrollo asistido por IA**; lo que ofrezco
@@ -44,7 +45,12 @@ está corriendo; `pytest` corre la suite **en verde** (ver el badge de CI arriba
 
 ## Demo (corrida real)
 
-La API, autodocumentada con OpenAPI (Swagger UI) — `health`, `documents`, `ask`, `metrics`:
+**Interfaz web** (React + TypeScript): se escribe una pregunta y se ve la respuesta con
+sus **citas** [n] y las **fuentes** que la respaldan.
+
+![omni-rag — interfaz web en React](docs/img/web.png)
+
+Y la API, autodocumentada con OpenAPI (Swagger UI) — `health`, `documents`, `ask`, `metrics`:
 
 ![omni-rag — documentación OpenAPI (Swagger UI)](docs/img/swagger.png)
 
@@ -278,6 +284,19 @@ embeddings. El stack de `docker compose` incluye **Prometheus** (que scrapea la 
 - Grafana (dashboard *"omni-rag — Observabilidad"*) → **http://localhost:3000** (login anónimo)
 
 Configuración en `deploy/prometheus/` y `deploy/grafana/provisioning/`.
+
+## Interfaz web (React + TypeScript)
+
+Una interfaz web mínima en [`services/web/`](services/web/) permite usar omni-rag desde
+el navegador: se escribe una pregunta y se ve la **respuesta con sus citas** y las
+**fuentes** que la respaldan. Está construida con **Vite + React + TypeScript** y consume
+la API de FastAPI (en desarrollo, Vite reenvía las llamadas a la API, sin CORS).
+
+```bash
+cd services/web
+npm install
+npm run dev            # http://localhost:5173  (con la API corriendo en :8000)
+```
 
 ## Gateway (microservicio en Go)
 
