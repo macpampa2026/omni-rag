@@ -44,6 +44,10 @@ está corriendo; `pytest` corre la suite **en verde** (ver el badge de CI arriba
 
 ## Demo (corrida real)
 
+La API, autodocumentada con OpenAPI (Swagger UI) — `health`, `documents`, `ask`, `metrics`:
+
+![omni-rag — documentación OpenAPI (Swagger UI)](docs/img/swagger.png)
+
 Salida **real** del sistema (instancia local, con reranking activado). Se cargan tres
 políticas y se hacen dos preguntas: una **cubierta** por los documentos y otra **fuera
 de alcance**.
