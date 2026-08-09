@@ -1,0 +1,33 @@
+{
+  "documents": [
+    {
+      "doc_id": "devoluciones",
+      "title": "Política de devoluciones",
+      "text": "El cliente tiene 30 dias corridos desde la compra para devolver un producto sin uso y en su empaque original. Se requiere el ticket o factura de compra. El reintegro se acredita en el mismo medio de pago dentro de los 10 dias habiles."
+    },
+    {
+      "doc_id": "garantia",
+      "title": "Política de garantía",
+      "text": "Los productos electronicos tienen 12 meses de garantia oficial contra fallas de fabricacion. Los electrodomesticos grandes como heladeras y lavarropas tienen 24 meses de garantia. La garantia no cubre daños por mal uso ni golpes."
+    },
+    {
+      "doc_id": "envios",
+      "title": "Política de envíos",
+      "text": "Los envios a todo el pais tardan de 3 a 5 dias habiles. El envio es gratis en compras superiores a 50000 pesos. Tambien se puede retirar en sucursal sin costo."
+    },
+    {
+      "doc_id": "pagos",
+      "title": "Medios de pago",
+      "text": "Se aceptan tarjetas de credito y debito, efectivo en sucursal y transferencia bancaria. Hay financiacion en hasta 12 cuotas sin interes con bancos seleccionados."
+    }
+  ],
+  "cases": [
+    {"question": "¿Cuántos días tengo para devolver un producto?", "in_scope": true, "gold_doc_id": "devoluciones", "expects_keywords": ["30"]},
+    {"question": "¿Qué necesito para hacer una devolución?", "in_scope": true, "gold_doc_id": "devoluciones", "expects_keywords": ["ticket", "factura"]},
+    {"question": "¿Cuánta garantía tiene una heladera?", "in_scope": true, "gold_doc_id": "garantia", "expects_keywords": ["24"]},
+    {"question": "¿Cuándo es gratis el envío?", "in_scope": true, "gold_doc_id": "envios", "expects_keywords": ["50000"]},
+    {"question": "¿En cuántas cuotas puedo pagar?", "in_scope": true, "gold_doc_id": "pagos", "expects_keywords": ["12"]},
+    {"question": "¿Tienen sucursales en Uruguay?", "in_scope": false},
+    {"question": "¿Cuál es el horario de atención al cliente?", "in_scope": false}
+  ]
+}

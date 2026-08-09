@@ -172,6 +172,27 @@ uvicorn app.main:app --reload
 Si `OMNIRAG_DATABASE_URL` no está definida, se usa el índice en memoria (M1). El
 mismo `VectorStore` (interfaz) permite intercambiar backends sin tocar la lógica.
 
+## Reranking y evaluación de calidad
+
+**Reranking (opcional):** con `OMNIRAG_RERANK_ENABLED=true`, el pipeline recupera un
+pool más grande de candidatos por similitud vectorial (`OMNIRAG_RERANK_CANDIDATES`) y
+luego los **reordena con el LLM** (reranking *listwise*, una sola llamada) antes de
+quedarse con los top-K. Mejora la precisión cuando la sola distancia coseno no alcanza.
+
+**Evaluación de calidad:** el harness en [`eval/`](eval/) mide la calidad del RAG
+contra un dataset de casos, con la API corriendo:
+
+```bash
+python eval/run_eval.py --base-url http://localhost:8000        # + --judge (LLM-judge)
+```
+
+Reporta métricas y **sale con error si no pasa el umbral** (sirve como gate de CI):
+
+- **retrieval recall** — ¿aparece el documento correcto en las fuentes?
+- **keyword recall** — ¿la respuesta contiene los datos esperados?
+- **anti-alucinación** — ante preguntas fuera de alcance, ¿responde el fallback en vez de inventar?
+- **LLM-judge** (opcional) — nota 0-10 de corrección y fundamentación.
+
 ## Docker (stack completo)
 
 Para levantar **todo el stack** (API + PostgreSQL con pgvector + Redis) con un

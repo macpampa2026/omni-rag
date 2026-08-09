@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from app.models.schemas import AskResponse, Source
 from app.services.ollama_client import OllamaClient
+from app.services.rerank import rerank
 from app.services.retrieval import retrieve
 from app.services.vector_store import Chunk, VectorStore
 
@@ -51,8 +52,16 @@ def answer(
     temperature: float,
     num_predict: int,
     gen_model: str,
+    rerank_enabled: bool = False,
+    rerank_candidates: int = 20,
 ) -> AskResponse:
-    hits = retrieve(store, ollama, question, k)
+    # Con reranking: recuperamos un pool grande por similitud y lo reordenamos
+    # con el LLM; si no, recuperamos directamente los top-k.
+    if rerank_enabled and rerank_candidates > k:
+        candidates = retrieve(store, ollama, question, rerank_candidates)
+        hits = rerank(ollama, question, candidates, k)
+    else:
+        hits = retrieve(store, ollama, question, k)
 
     if not hits:
         return AskResponse(

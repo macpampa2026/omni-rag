@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     gen_temperature: float = 0.1
     gen_num_predict: int = 500
 
+    # Reranking (opcional): recupera un pool más grande por similitud y lo
+    # reordena con el LLM antes de quedarse con los top_k.
+    rerank_enabled: bool = False
+    rerank_candidates: int = 20
+
     # --- Almacenamiento ---
     index_path: str = "data/index.json"
 

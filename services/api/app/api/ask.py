@@ -31,4 +31,6 @@ def ask(
         temperature=settings.gen_temperature,
         num_predict=settings.gen_num_predict,
         gen_model=settings.gen_model,
+        rerank_enabled=settings.rerank_enabled,
+        rerank_candidates=settings.rerank_candidates,
     )
